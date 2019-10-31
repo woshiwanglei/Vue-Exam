@@ -6,7 +6,7 @@
     	</header>
     	<div v-if="fatherComponent == 'home'" >
     		<div class="home_logo item_container_style"></div>
-    		<router-link to="item" class="start button_style" ></router-link>
+    		<router-link to="item" class="start button_style1" ></router-link>
     	</div>
     	<div v-if="fatherComponent == 'item'" >
     		<div class="item_back item_container_style">
@@ -21,7 +21,8 @@
     			</div>
     		</div>
         <span class="last_item" @click="lastItem" v-if="itemNum > 1"></span>
-    		<span class="next_item button_style" @click="nextItem" v-if="itemNum < itemDetail.length"></span>
+    		<span class="next_item button_style" @click="nextItem" v-if="itemNum < itemDetail.length & itemNum > 1"></span>
+        <span class="next_item button_style1" @click="nextItem" v-else-if="itemNum == 1"></span>
     		<span class="submit_item button_style" v-else @click="submitAnswer"></span>
     	</div>
   	</section>
@@ -166,6 +167,17 @@ export default {
         margin-left: 1.4rem;
         background-repeat: no-repeat;
 	}
+  .button_style1{
+      display: block;
+      height: 2.1rem;
+      width: 4.35rem;
+      background-size: 100% 100%;
+      position: absolute;
+      top: 16.5rem;
+      left: 50%;
+      margin-left: -2.4rem;
+      background-repeat: no-repeat;
+  }
 	.start{
         background-image: url(../images/1-4.png);
     }
