@@ -13,13 +13,14 @@
     			<div class="item_list_container" v-if="itemDetail.length > 0">
     				<header class="item_title">{{itemDetail[itemNum-1].topic_name}}</header>
     				<ul>
-    					<li  v-for="(item, index) in itemDetail[itemNum-1].topic_answer" @click="choosed(index, item.topic_answer_id)" class="item_list">
-    						<span class="option_style" v-bind:class="{'has_choosed':choosedNum==index}">{{chooseType(index)}}</span>
+    					<li  v-for="(item, index) in itemDetail[itemNum-1].topic_answer" @click="choosed(index)" class="item_list">
+    						<span class="option_style" v-bind:class="{'has_choosed':item.is_choose}">{{chooseType(index)}}</span>
     						<span class="option_detail">{{item.answer_name}}</span>
     					</li>
     				</ul>
     			</div>
     		</div>
+        <span class="last_item" @click="lastItem" v-if="itemNum > 1"></span>
     		<span class="next_item button_style" @click="nextItem" v-if="itemNum < itemDetail.length"></span>
     		<span class="submit_item button_style" v-else @click="submitAnswer"></span>
     	</div>
@@ -46,18 +47,27 @@ export default {
 	]),
   	methods: {
   		...mapActions([
-  			'addNum', 'initializeData',
+  			'addNum', 'initializeData','subtractNum'
   		]),
   		//点击下一题
   		nextItem(){
-  			if (this.choosedNum !== null) {
-	  			this.choosedNum = null;
-	  			//保存答案, 题目索引加一，跳到下一题
-	  			this.addNum(this.choosedId)
-  			}else{
-  				alert('您还没有选择答案哦')
-  			}
+        var chooseCount = 0;
+        for (var i = 0; i < this.itemDetail[this.itemNum-1].topic_answer.length; i++) {
+          if (this.itemDetail[this.itemNum-1].topic_answer[i].is_choose == 1){
+            chooseCount += 1;
+          }
+          }
+        if (chooseCount == 1){
+          this.addNum();
+        }
+        else{
+          alert('您还没有选择答案哦')
+        }
   		},
+      //点击上一题
+      lastItem(){
+        this.subtractNum()
+      },
   		//索引0-3对应答案A-B
 	  	chooseType: type => {
 	  		switch(type){
@@ -68,19 +78,31 @@ export default {
 	  		}
 	  	},
 	  	//选中的答案信息
-	  	choosed(type,id){
-	  		this.choosedNum = type;
-	  		this.choosedId = id;
+	  	choosed(index){
+        for (var i = 0; i < this.itemDetail[this.itemNum-1].topic_answer.length; i++) {
+            if (index == i){
+              this.itemDetail[this.itemNum-1].topic_answer[i].is_choose = 1;
+            }
+            else{
+              this.itemDetail[this.itemNum-1].topic_answer[i].is_choose = 0;
+            }
+         }
 	  	},
 	  	//到达最后一题，交卷，请空定时器，跳转分数页面
 	  	submitAnswer(){
-	  		if (this.choosedNum !== null) {
-	  			this.addNum(this.choosedId)
-	  			clearInterval(this.timer)
-	  			this.$router.push('score')
-  			}else{
-  				alert('您还没有选择答案哦')
-  			}
+        var chooseCount = 0;
+        for (var i = 0; i < this.itemDetail[this.itemNum-1].topic_answer.length; i++) {
+          if (this.itemDetail[this.itemNum-1].topic_answer[i].is_choose == 1){
+            chooseCount += 1;
+          }
+          }
+        if (chooseCount == 1){
+          clearInterval(this.timer)
+          this.$router.push('score')
+        }
+        else{
+          alert('您还没有选择答案哦')
+        }
 	  	},
 	},
 	created(){
@@ -123,7 +145,7 @@ export default {
 		position: absolute;
 		top: 4.1rem;
 		left: 1rem;
-	}	
+	}
 	.home_logo{
 		background-image: url(../images/1-2.png);
 		background-size: 13.142rem 100%;
@@ -141,7 +163,7 @@ export default {
         position: absolute;
         top: 16.5rem;
         left: 50%;
-        margin-left: -2.4rem;
+        margin-left: 1.4rem;
         background-repeat: no-repeat;
 	}
 	.start{
@@ -149,6 +171,18 @@ export default {
     }
     .next_item{
     	background-image: url(../images/2-2.png);
+    }
+    .last_item{
+      display: block;
+      height: 2.1rem;
+      width: 4.35rem;
+      background-size: 100% 100%;
+      position: absolute;
+      top: 16.5rem;
+      right: 50%;
+      margin-right: 1.4rem;
+      background-repeat: no-repeat;
+    	background-image: url(../images/2-3.png);
     }
     .submit_item{
     	background-image: url(../images/3-1.png);

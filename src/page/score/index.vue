@@ -2,12 +2,13 @@
   	<div>
     	<div class="your_scores_container">
             <header class="your_scores"><span class="score_num">{{score}}</span><span class="fenshu">分！</span></header>
+            <div class="time_tip">答题用时:{{allTime}}秒</div>
             <div class="result_tip">{{scoreTips}}</div>
         </div>
         <div class="share_button" @click="showCover"></div>
         <div class="share_code">
             <header class="share_header">关注葡萄之家，获取答案。</header>
-            <img src="../../images/4-4.png" height="212" width="212" class="code_img"> 
+            <img src="../../images/4-4.png" height="212" width="212" class="code_img">
         </div>
         <div class="share_cover" v-show="showHide" @click="showCover">
             <img src="../../images/5-2.png" class="share_img">
@@ -25,10 +26,14 @@ export default {
             score: 0, //分数
             scoreTips:'', //分数提示
             rightAnswer: [2, 7, 12, 13, 18], //正确答案
-            scoreTipsArr:['你说，是不是把知识都还给小学老师了？','还不错，但还需要继续加油哦！','不要嘚瑟还有进步的空间！','智商离爆表只差一步了！','你也太聪明啦，葡萄之家欢迎你！'],
+            scoreTipsArr:['你成功避过了所有正确答案？','你说，是不是把知识都还给小学老师了？','还不错，但还需要继续加油哦！','不要嘚瑟还有进步的空间！','智商离爆表只差一步了！','你也太聪明啦，葡萄之家欢迎你！'],
         }
     },
-    computed: mapState(['answerid']),
+    computed: mapState([
+      'answerid',
+      'allTime',
+      'itemDetail'
+    ]),
 	created(){
         this.computedScore();
         this.getScoreTip();
@@ -37,11 +42,20 @@ export default {
     methods: {
         //计算分数
         computedScore(){
-            this.answerid.forEach((item, index) => {
-                if (item == this.rightAnswer[index]) {
-                    this.score += 20;
+            var answerids = [];
+            for (var i = 0; i < this.itemDetail.length; i++) {
+              for (var j = 0; j < this.itemDetail[i].topic_answer.length; j++) {
+                  if (this.itemDetail[i].topic_answer[j].is_choose == 1){
+                    answerids.push(this.itemDetail[i].topic_answer[j].topic_answer_id);
+                    console.log(this.itemDetail[i].topic_answer[j].topic_answer_id)
+                  }
                 }
-            })
+              }
+              answerids.forEach((item, index) => {
+                  if (item == this.rightAnswer[index]) {
+                      this.score += 20;
+                  }
+              })
         },
         //是否显示分享提示
         showCover: function (){
@@ -49,7 +63,7 @@ export default {
         },
         //根据分数显示提示
         getScoreTip: function (){
-          let index = Math.ceil(this.score/20)-1;
+          let index = Math.ceil(this.score/20);
           this.scoreTips = this.scoreTipsArr[index];
         }
     },
@@ -73,7 +87,7 @@ export default {
             position: absolute;
             width: 100%;
             text-indent: 3.3rem;
-            top: 4.7rem;
+            top: 4rem;
             font-size: 1.4rem;
             font-weight: 900;
             -webkit-text-stroke: 0.05rem #412318;
@@ -89,6 +103,15 @@ export default {
         .result_tip{
             position: absolute;
             top: 7rem;
+            width: 9rem;
+            left: 0.6rem;
+            color: #3e2415;
+            font-size: 0.65rem;
+            text-align: center;
+        }
+        .time_tip{
+            position: absolute;
+            top: 5.9rem;
             width: 9rem;
             left: 0.6rem;
             color: #3e2415;
@@ -134,7 +157,8 @@ export default {
         width: 11.95rem;
         position: fixed;
         top: 0.5rem;
-        left: 50%;
-        margin-left: -5.975rem;
+        // left: 50%;
+        // margin-left: -5.975rem;
+        right: 0.5rem;
     }
 </style>
